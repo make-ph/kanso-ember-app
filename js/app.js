@@ -1,4 +1,4 @@
-App = Ember.Application.create();
+App = Ember.Application.create({});
 
 App.Store = DS.Store.extend({
   revision: 12,
@@ -6,7 +6,9 @@ App.Store = DS.Store.extend({
 });
 
 App.Router.map(function() {
-  this.resource('posts');
+  this.resource('posts', function() {
+    this.resource("post", { path: ':post_id' });
+  });
   this.resource('about');
 });
 
@@ -16,12 +18,14 @@ App.PostsRoute = Ember.Route.extend({
   }
 });
 
+var attr = DS.attr;
+
 App.Post = DS.Model.extend({
-  title: DS.attr('string'),
-  author: DS.attr('string'),
-  intro: DS.attr('string'),
-  extended: DS.attr('string'),
-  publishedAt: DS.attr('date')
+  title: attr('string'),
+  author: attr('string'),
+  intro: attr('string'),
+  extended: attr('string'),
+  publishedAt: attr('date')
 });
 
 App.Post.FIXTURES = [{
@@ -39,3 +43,7 @@ App.Post.FIXTURES = [{
   intro: "My [appearance on the Ruby Rogues podcast](http://rubyrogues.com/056-rr-david-heinemeier-hansson/) recently came up for discussion again on the private Parley mailing list.",
   extended: "A long list of topics were raised and I took a time to ramble at large about all of them at once. Apologies for not taking the time to be more succinct, but at least each topic has a header so you can skip stuff you don't care about.\n\n### Maintainability\n\nIt's simply not true to say that I don't care about maintainability. I still work on the oldest Rails app in the world."
 }];
+
+Ember.Handlebars.registerBoundHelper('date', function(date) {
+  return moment(date).fromNow();
+});
